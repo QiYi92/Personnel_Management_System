@@ -1,4 +1,8 @@
+import pymysql
 info_list = []
+
+# 数据库
+db = pymysql.connect(host="localhost", user="root", password="root", db="pms", port=3306)
 
 def show_menu():
     """显示菜单"""
@@ -40,11 +44,32 @@ def new_employee1():
     print('功能：新增机关员工')
     print('>>>不可更改岗位和地点<<<')
 
+    # 数据库
+
+    # 使用cursor()方法获取操作游标
+    cur = db.cursor()
+
+    sql_insert = """insert into menber(name,work,site,time) values({name},{work},{site},{time})"""
+
+    # 获取cursor对象
+    cs1 = db.cursor()
+    # 执行sql语句
+    query = 'insert into menber(name,work,site,time) values(%s,%s,%s,%s)'
     # 提示用户输入员工信息
     name = input('请输入员工姓名:')
     work = '※机关'
     site = '※机关'
     time = '※长期'
+    values = (name,work,site,time)
+    cs1.execute(query, values)
+
+    # 提交之前的操作，如果之前已经执行多次的execute，那么就都进行提交
+    db.commit()
+
+    # 关闭cursor对象
+    cs1.close()
+    # 关闭connection对象
+    db.close()
 
     # 保存到字典
     info_dict = {
